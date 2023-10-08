@@ -117,7 +117,7 @@ class Torch2TFLiteConverter:
         else:
             logging.info(f'Sample input file path not specified, random data will be generated')
             np.random.seed(seed)
-            target_shape = (1, 8)
+            target_shape = (1, 2, 8)
             print(f"SHape is {target_shape}")
             data = np.random.random(target_shape).astype(np.float32)
             sample_data_torch = torch.from_numpy(data)
