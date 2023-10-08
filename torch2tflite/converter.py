@@ -21,7 +21,7 @@ class Torch2TFLiteConverter:
             torch_model_path: str,
             tflite_model_save_path: str,
             sample_file_path: Optional[str] = None,
-            target_shape: tuple = (224, 224, 3),
+            target_shape: tuple = (1, 8),
             seed: int = 10,
             normalize: bool = True
     ):
@@ -68,9 +68,8 @@ class Torch2TFLiteConverter:
             else:
                 logging.error('Specified file path not compatible with torch2tflite, exiting!')
                 sys.exit(-1)
-        except Exception:
-            logging.error('Can not load PyTorch model. Please make sure'
-                          'that model saved like `torch.save(model, PATH)`')
+        except Exception as ex:
+            logging.error(f"Can not load PyTorch model. Please make sure that model saved like `torch.save(model, PATH)`, ex was:\n{ex}")
             sys.exit(-1)
 
     def load_tflite(self):
@@ -118,12 +117,13 @@ class Torch2TFLiteConverter:
         else:
             logging.info(f'Sample input file path not specified, random data will be generated')
             np.random.seed(seed)
+            target_shape = (1, 8)
+            print(f"SHape is {target_shape}")
             data = np.random.random(target_shape).astype(np.float32)
-            sample_data_np = np.transpose(data, (2, 0, 1))[np.newaxis, :, :, :]
-            sample_data_torch = torch.from_numpy(sample_data_np)
+            sample_data_torch = torch.from_numpy(data)
             logging.info(f'Sample input randomly generated')
 
-        return {'sample_data_np': sample_data_np, 'sample_data_torch': sample_data_torch}
+        return {'sample_data_np': data, 'sample_data_torch': sample_data_torch}
 
     def torch2onnx(self) -> None:
         torch.onnx.export(
@@ -174,7 +174,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--torch-path', type=str, required=True)
     parser.add_argument('--tflite-path', type=str, required=True)
-    parser.add_argument('--target-shape', type=tuple, nargs=3, default=(224, 224, 3))
+    parser.add_argument('--target-shape', type=tuple, nargs=2, default=(1, 8))
     parser.add_argument('--sample-file', type=str)
     parser.add_argument('--seed', type=int, default=10)
     args = parser.parse_args()
@@ -182,8 +182,7 @@ if __name__ == '__main__':
     conv = Torch2TFLiteConverter(
         args.torch_path,
         args.tflite_path,
-        args.sample_file,
-        args.target_shape,
+        args.sample_file,        
         args.seed
     )
     conv.convert()

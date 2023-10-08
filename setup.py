@@ -2,13 +2,15 @@ from setuptools import setup
 
 # specify requirements of your package here
 REQUIREMENTS = [
-    'tensorflow ~= 2.5',
-    'tflite-runtime ~= 2.5',
-    'torch == 1.8.1',
-    'tensorflow-addons ~= 0.13',
-    'opencv-python ~= 4.5.2',
-    'onnx ~= 1.9',
-    'onnx-tf ~= 1.8',
+    'tensorflow == 2.8.0',
+    'tflite-runtime',
+    'torch',
+    "protobuf==3.20.0",
+    "tensorflow-addons==0.18.0",
+    "tensorflow-probability==0.16.0",
+    "opencv-python",
+    'onnx',
+    'onnx-tf',
     'numpy >= 1.19'
 ]
 
